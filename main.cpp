@@ -5,19 +5,78 @@
 using namespace std;
 #define PROBABILITY_MINE 20 // value in porcentage
 
+int showGameOverWindow(sf::RenderWindow &parentWindow)
+{
+    int windowW = 800;
+    int windowH = 600;
+
+    sf::Texture haddadImage;
+    sf::Text gameOverText;
+    sf::RenderWindow gameOverWindow(sf::VideoMode(windowW, windowH), "Taxado!!!");
+    sf::Font font;
+    sf::Vector2i parentPosition = parentWindow.getPosition();
+    gameOverWindow.setPosition(sf::Vector2i(parentPosition.x + 50, parentPosition.y + 50));
+
+    if (!font.loadFromFile("files/font.ttf"))
+    {
+        cerr << "Erro to load font!" << endl;
+        return -1;
+    }
+    if (!haddadImage.loadFromFile("files/haddad.jpg"))
+    {
+        cerr << "Erro to load Haddad file!";
+        return -1;
+    }
+
+    // centralize the text
+    sf::FloatRect textRect = gameOverText.getLocalBounds();
+    gameOverText.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+    gameOverText.setPosition(windowW / 5.0f, windowH / 2.0f + 50);
+    gameOverText.setFont(font);
+    gameOverText.setString("Voce foi taxado!!!\n");
+    gameOverText.setCharacterSize(50);
+    gameOverText.setFillColor(sf::Color::Red);
+
+    // load the image
+    sf::Sprite gameOverImage(haddadImage);
+    sf::FloatRect imageRect = gameOverImage.getLocalBounds();
+
+    while (gameOverWindow.isOpen())
+    {
+        sf::Event gameOverEvent;
+        while (gameOverWindow.pollEvent(gameOverEvent))
+        {
+            if (gameOverEvent.type == sf::Event::Closed)
+            {
+                gameOverWindow.close();
+                parentWindow.setVisible(true);
+            }
+        }
+        gameOverWindow.clear(sf::Color::White);
+        gameOverWindow.draw(gameOverImage);
+        gameOverWindow.draw(gameOverText);
+        gameOverWindow.display();
+    }
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
 
     srand(time(0));
-    sf::RenderWindow window(sf::VideoMode(640, 480), "Mine sweeper - @The-Kevin");
+    sf::RenderWindow window(sf::VideoMode(640, 480), "Taxadweeper - @The-Kevin");
     sf::Texture texture;
 
-    texture.loadFromFile("files/tiles.jpg");
+    if (!texture.loadFromFile("files/tiles.jpg"))
+    {
+        return -1;
+    }
     sf::Sprite s(texture);
 
     int cellSize = 32;
     int grid[12][12];  // grid size
     int sgrid[12][12]; // grid currently state
+    bool gameOver = false;
 
     /**
      *  @explain the code below
@@ -87,15 +146,63 @@ int main(int argc, char *argv[])
 
     while (window.isOpen())
     {
+
+        sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+        int mousePositionX = mousePosition.x / cellSize;
+        int mousePositionY = mousePosition.y / cellSize;
+
         sf::Event event;
 
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                if (event.key.code == sf::Mouse::Left)
+                {
+                    if (grid[mousePositionX][mousePositionY] == 9)
+                    {
+                        gameOver = true;
+                        window.setVisible(false);
+                        showGameOverWindow(window);
+                    }
+                    else
+                    {
+                        sgrid[mousePositionX][mousePositionY] = grid[mousePositionX][mousePositionY];
+                    }
+                }
+                else if (event.key.code == sf::Mouse::Right)
+                    sgrid[mousePositionX][mousePositionY] = 11;
+            }
         }
 
         window.clear(sf::Color::White);
+        /**
+         * @explain the code below
+         * build the initial state and texture
+         * this code create the window texture following the cell size
+         *
+         * if the user click in a mine, show all cell discovered
+         * and verify what the position in the tiles.jpg will used to fill the each cell
+         *
+         */
+        for (int i = 1; i <= 10; i++)
+        {
+            for (int j = 0; j <= 10; j++)
+            {
+                if (gameOver)
+                {
+                    sgrid[i][j] = grid[i][j];
+                }
+                s.setTextureRect(sf::IntRect(sgrid[i][j] * cellSize, 0, cellSize, cellSize));
+                s.setPosition(i * cellSize, j * cellSize);
+
+                window.draw(s);
+            }
+        }
+
         window.display();
     }
     return 0;
