@@ -57,6 +57,9 @@ int main(int argc, char *argv[])
      *  incrementing the number value of the cell (the n variable) according if there's a mine around
      *
      *  this was be implemented in this way to avoid too many if/elses
+     *  The eight neighborhoods of the cell are checked:
+     *  up, down, left, right: grid[i+1][j], grid[i][j+1], grid[i-1][j], grid[i][j-1]
+     *  diagonals: grid[i+1][j+1], grid[i-1][j-1], grid[i-1][j+1], grid[i+1][j-1]
      */
 
     int dx[] = {1, 1, 0, -1, -1, -1, 0, 1}; // x-displacements of the 8 directions
