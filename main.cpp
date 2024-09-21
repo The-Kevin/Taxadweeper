@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     }
     sf::Sprite s(texture);
 
-    int cellSize = 32;
+    int cellSize = 32; // each cells in titles.jpg have 32px of width
     int grid[12][12];  // grid size
     int sgrid[12][12]; // grid currently state
     bool gameOver = false;
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
          * build the initial state and texture
          * this code create the window texture following the cell size
          *
-         * if the user click in a mine, show all cell discovered
+         * if the gameOver is setted true, show all cell discovered
          * and verify what the position in the tiles.jpg will used to fill the each cell
          *
          */
