@@ -3,6 +3,7 @@
 Seu objetivo aqui é comprar o máximo de produtos de sites chineses sem ser pego pela Receita Federal!
 
 ![Screenshot da tela principal](docs/ScreenshotMainScreen.png)
+![Gif working game](docs/working.gif)
 
 Caso você compre uma encomenda rastreada pela Receita Federal, o Taxad irá atrás de você!
 
